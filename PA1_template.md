@@ -228,11 +228,12 @@ for(i in 1:total_data){
         complete_steps_data[i, 5] <- 'weekend'
     }
 }
+names(complete_steps_data)[5] <- 'daytype'
 head(complete_steps_data)
 ```
 
 ```
-##       steps       date interval weekday      V5
+##       steps       date interval weekday daytype
 ## 1 1.7169811 2012-10-01        0  Monday weekday
 ## 2 0.3396226 2012-10-01        5  Monday weekday
 ## 3 0.1320755 2012-10-01       10  Monday weekday
@@ -242,7 +243,6 @@ head(complete_steps_data)
 ```
 
 ```r
-names(complete_steps_data)[5] <- 'daytype'
 complete_steps_data$daytype <- factor(complete_steps_data$daytype)
 ```
 

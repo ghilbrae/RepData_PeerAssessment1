@@ -146,8 +146,8 @@ for(i in 1:total_data){
         complete_steps_data[i, 5] <- 'weekend'
     }
 }
-head(complete_steps_data)
 names(complete_steps_data)[5] <- 'daytype'
+head(complete_steps_data)
 complete_steps_data$daytype <- factor(complete_steps_data$daytype)
 ```
 

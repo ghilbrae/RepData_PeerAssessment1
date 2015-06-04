@@ -265,4 +265,4 @@ plot(intervals, mean_weekday, type = 'l', main = 'Weekday', ylab = 'Number of St
 
 ![](PA1_template_files/figure-html/plot_days-1.png) 
 
-From these results, it seems that this subject is more active during 
+From these results, it seems that this subject is more active during the weekends.

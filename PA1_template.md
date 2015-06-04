@@ -1,16 +1,12 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
 The first step is to load the data and run a preliminary processing it so it will be more easily handled in the latter part of this analysis.
 
-```{r loaddata}
+
+```r
 steps_data <- read.csv('activity.csv', header = TRUE)
 ```
 
@@ -20,25 +16,46 @@ The data consists of three variables: *steps* (integer), *date* (factor), *inter
 
 To determine the mean of steps taken each they, we will first try to determine the total nnumber of steps taken each day:
 
-```{r daily_steps}
+
+```r
 daily_steps <- tapply(steps_data$steps, steps_data$date, sum)
 summary(daily_steps)
 ```
 
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##      41    8841   10760   10770   13290   21190       8
+```
+
 In order to have a better understanding of what these data looks like we can plot these information in a histogram:
 
-```{r daily_steps_hist}
+
+```r
 hist(daily_steps, col = 'green', xlab = 'Number of daily steps', main = 'Histogram steps taken per day')
 rug(daily_steps)
 abline(v = median(daily_steps, na.rm = TRUE), lty = 4, col = 'red')
 abline(v = mean(daily_steps, na.rm = TRUE), lty = 8, col = 'blue')
 ```
 
+![](PA1_template_files/figure-html/daily_steps_hist-1.png) 
+
 The histogram contains also the values of the *mean* and the *median* of the data. As these values are very close, the lines representing them seem to overlap.
 
-```{r mean_median}
+
+```r
 mean(daily_steps, na.rm = TRUE)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(daily_steps, na.rm = TRUE)
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -48,20 +65,24 @@ We are now going to make a time series plot (i.e. `type = "l"`) of the 5-minute 
 
 To achieve this we will need to determine the intervals as a factor variable and the mean of the steps in each of these intervals:
 
-```{r avg_daily_pattern}
+
+```r
 intervals <- levels(factor(steps_data$interval))
 avg_steps <- tapply(steps_data$steps, steps_data$interval, mean, na.rm = TRUE)
 plot(intervals, avg_steps, type = 'l', main = '5-minute interval average activity', xlab = 'Interval index', ylab = 'Average number of steps')
 ```
 
+![](PA1_template_files/figure-html/avg_daily_pattern-1.png) 
+
 From these results it can be easily determined which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps:
 
-```{r max_interval, results='hide'}
+
+```r
 m <- max(avg_steps)
 intv <- names(avg_steps[avg_steps == m])
 ```
 
-Which results in a maximun value of **`r m`** steps for the interval **`r intv`**.
+Which results in a maximun value of **206.1698113** steps for the interval **835**.
 
 ## Imputing missing values
 
@@ -69,15 +90,34 @@ The data contains a number of days/intervals where there are missing values (cod
 
 The first step in analyzing the missing values will be to calculate and report the total number of missing values in the dataset (i.e. the total number of rows with `NA`s):
 
-```{r number_NA}
+
+```r
 length(which(is.na(steps_data$steps) | is.na(steps_data$interval) | is.na(steps_data$date)))
+```
+
+```
+## [1] 2304
 ```
 
 In order to get a full data set we are going to devise a strategy for filling in all of the missing values in the dataset. What will be done is to substitute those missing values by the corresponding value of the average value previously calculated for that interval. So in the end we will have dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r filling_NA}
+
+```r
 # Show first rows of the data set
 head(steps_data)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
+```r
 # Determine the rows with missing values
 missing_values <- which(is.na(steps_data$steps) | is.na(steps_data$interval) | is.na(steps_data$date),)
 # Substitute with the average values for the time interval in a new data set
@@ -90,38 +130,72 @@ for(i in missing_values){
 head(complete_steps_data)
 ```
 
+```
+##       steps       date interval
+## 1 1.7169811 2012-10-01        0
+## 2 0.3396226 2012-10-01        5
+## 3 0.1320755 2012-10-01       10
+## 4 0.1509434 2012-10-01       15
+## 5 0.0754717 2012-10-01       20
+## 6 2.0943396 2012-10-01       25
+```
+
 We can compare this new data set with the original one. First, we are going to make a histogram of the total number of steps taken each day as well as calculate **mean** and **median** total number of steps taken per day.
 
-```{r daily_steps_complete}
+
+```r
 daily_steps_complete <- tapply(complete_steps_data$steps, complete_steps_data$date, sum)
 summary(daily_steps_complete)
 ```
 
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    9819   10770   10770   12810   21190
+```
+
 We can also plot these information in a histogram:
 
-```{r daily_steps_complete_hist}
+
+```r
 hist(daily_steps_complete, col = 'green', xlab = 'Number of daily steps', main = 'Histogram steps taken per day (complete data)')
 rug(daily_steps_complete)
 abline(v = median(daily_steps_complete), lty = 4, col = 'red')
 abline(v = mean(daily_steps_complete), lty = 8, col = 'blue')
 ```
 
+![](PA1_template_files/figure-html/daily_steps_complete_hist-1.png) 
+
 The histogram contains also the values of the *mean* and the *median* of the data. As these values are the same, the lines representing them seem to overlap.
 
-```{r mean_median_complete}
+
+```r
 mean(daily_steps_complete)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(daily_steps_complete)
+```
+
+```
+## [1] 10766.19
 ```
 
 We can draw the two plots together to better appreciate the difference:
 
-```{r both_plots}
+
+```r
 par(mfrow = c(1,2))
 hist(daily_steps, col = 'green', xlab = 'Number of daily steps', main = 'Original data')
 rug(daily_steps)
 hist(daily_steps_complete, col = 'green', xlab = 'Number of daily steps', main = 'Complete data')
 rug(daily_steps_complete)
 ```
+
+![](PA1_template_files/figure-html/both_plots-1.png) 
 
 As seen there is a small difference in the results. Even if there is an impact on the frequency in the interval between 10000 and 15000 steps, the mean has not changed and the median, has barely done so.
 
@@ -131,9 +205,17 @@ We are now going to study if there is any difference in the activity patterns be
 
 The first step will be to create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day:
 
-```{r factor_days}
+
+```r
 library(lubridate)
 Sys.setlocale('LC_TIME', 'C')
+```
+
+```
+## [1] "C"
+```
+
+```r
 complete_steps_data$weekday <- weekdays(as.Date(complete_steps_data$date))
 regular <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
 weekend <- c('Saturday', 'Sunday')
@@ -147,13 +229,27 @@ for(i in 1:total_data){
     }
 }
 head(complete_steps_data)
+```
+
+```
+##       steps       date interval weekday      V5
+## 1 1.7169811 2012-10-01        0  Monday weekday
+## 2 0.3396226 2012-10-01        5  Monday weekday
+## 3 0.1320755 2012-10-01       10  Monday weekday
+## 4 0.1509434 2012-10-01       15  Monday weekday
+## 5 0.0754717 2012-10-01       20  Monday weekday
+## 6 2.0943396 2012-10-01       25  Monday weekday
+```
+
+```r
 names(complete_steps_data)[5] <- 'daytype'
 complete_steps_data$daytype <- factor(complete_steps_data$daytype)
 ```
 
 With this new information we can study the difference in activity between weekday and weekends. We will make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken per interval, averaged across all weekday days or weekend days (y-axis).
 
-```{r plot_days}
+
+```r
 # Divide the data set in two depending on the day
 day_division <- split(complete_steps_data, complete_steps_data$daytype)
 weekday <- complete_steps_data[which(complete_steps_data$daytype == 'weekday'),]
@@ -167,4 +263,6 @@ plot(intervals, mean_weekend, type = 'l', main = 'Weekend', ylab = 'Number of St
 plot(intervals, mean_weekday, type = 'l', main = 'Weekday', ylab = 'Number of Steps', xlab = 'Interval')
 ```
 
-From these results, it seems that this subject is more active during the weekends.
+![](PA1_template_files/figure-html/plot_days-1.png) 
+
+From these results, it seems that this subject is more active during 
